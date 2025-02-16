@@ -22,31 +22,9 @@ class EditBot(Plugin):
     def create_edit_message(self, author: str, room_id: str, new: str, original: str) -> str:
         result = ">  Message edited by %s in room %s\n\n" % (author, room_id)
         result += ">  Original message:\n%s\n\n" % original
-        result += ">  New message:\n%s" % new
-        result += "----------------------------------------\n"
+        result += ">  New message:\n%s\n" % new
+        result += "----------------------------------------\n\n"
         return result
-
-    # def create_delete_message(self, author: str, room_id: str, original: str) -> str:
-    #     result = ">  Message deleted by %s in room %s\n\n" % (author, room_id)
-    #     result += ">  Original message:\n%s" % original
-    #     result += "----------------------------------------\n"
-    #     return result
-
-
-    # @event.on(EventType.ROOM_REDACTION)
-    # async def delete_handler(self, event: MessageEvent) -> None:
-    #     # Get the message with id edit_message
-    #     orig_event_id = event.content.get("redacts")
-    #     if orig_event_id == None:
-    #         self.log.debug("No redacts key in redaction event: %s" % event.content)
-    #         return
-    #     orig_event = await self.client.get_event(event.room_id, orig_event_id)
-    #     if not isinstance(orig_event, MessageEvent):
-    #         self.log.trace("Error: orig_event is not a MessageEvent: %s" % orig_event)
-        
-    #     # Write the message into the special room
-    #     await self.client.send_notice(self.EDIT_ROOM_ID, self.create_delete_message(event.sender, event.room_id, orig_event.content.body))
-
 
     @event.on(EventType.ROOM_MESSAGE)
     async def edit_handler(self, event: MessageEvent) -> None:
