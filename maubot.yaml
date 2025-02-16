@@ -1,0 +1,9 @@
+maubot: 0.1.0
+id: com.conan747.editbot
+version: 0.0.3
+license: MIT
+modules:
+- editbot
+main_class: EditBot
+extra_files:
+- base-config.yaml

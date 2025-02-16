@@ -1,0 +1,5 @@
+# The room where the edits will be recorded.
+edit_room: "!myeditroom:matrix.host"
+# List of rooms that the bot will ignore.
+ignorelist:
+  - "!mybusyroom:matrix.host"
