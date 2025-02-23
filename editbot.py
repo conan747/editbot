@@ -13,9 +13,6 @@ class Config(BaseProxyConfig):
 
 class EditBot(Plugin):
 
-    EDIT_ROOM_ID = "!FPsmGPDLcDywraUQGb:one.ems.host"
-
-
     async def start(self) -> None:
         self.config.load_and_update()
     
