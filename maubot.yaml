@@ -1,6 +1,6 @@
-maubot: 0.1.0
+maubot: 0.3.0
 id: com.conan747.editbot
-version: 0.0.3
+version: 0.0.4
 license: MIT
 modules:
 - editbot

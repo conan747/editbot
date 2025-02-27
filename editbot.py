@@ -3,6 +3,7 @@ from maubot import Plugin, MessageEvent
 from maubot.handlers import event
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 from typing import Type
+from maubot.handlers import command
 
 
 
@@ -27,6 +28,8 @@ class EditBot(Plugin):
     async def edit_handler(self, event: MessageEvent) -> None:
         edit_message = event.content.get_edit()
         if edit_message == None:
+            if event.content.body == "!editbot_disable":
+                await self.editbot_disable(event)
             return
         if event.room_id in self.config["ignorelist"]:
             return
@@ -38,6 +41,18 @@ class EditBot(Plugin):
         # Write the message into the special room
         await self.client.send_notice(self.config["edit_room"], self.create_edit_message(event.sender, event.room_id, event.content.body, orig_event.content.body))
 
+
+    async def editbot_disable(self, evt: MessageEvent) -> None: 
+        room = evt.room_id
+        self.log.info("Disabling editbot in room %s" % room)
+        if room in self.config["ignorelist"]:
+            self.log.info("Room %s already in ignorelist" % room)
+            await evt.redact("Already disabled")
+        else:
+            self.config["ignorelist"].append(room)
+            self.config.save()        
+            await evt.redact("Disabled editbot in this room")
+            self.log.info("Disabled editbot in room %s" % room)
 
     @classmethod
     def get_config_class(cls) -> Type[BaseProxyConfig]:
