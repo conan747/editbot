@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from maubot import MessageEvent
+from mautrix.types import EventType
 
 from editbot import EditBot, Config
 
@@ -27,6 +28,7 @@ async def test_valid_edit_sends_notification(plugin):
     mock_event = MagicMock(spec=MessageEvent)
     mock_event.room_id = "!test_room:example.com"
     mock_event.sender = "@user:example.com"
+    mock_event.type = EventType.ROOM_MESSAGE
     
     # Create edit content mock
     edit_content = MagicMock()
@@ -42,6 +44,13 @@ async def test_valid_edit_sends_notification(plugin):
     # Mock client methods
     plugin.client.get_event = AsyncMock(return_value=orig_event)
     plugin.client.send_notice = AsyncMock()
+    profile = MagicMock()
+    profile.displayname = "editorname"
+    plugin.client.get_profile = AsyncMock(return_value=profile)
+    state = MagicMock()
+    state.name = "room_name"
+    plugin.client.get_state_event = AsyncMock(return_value=state)
+
 
     # Trigger the handler
     await plugin.edit_handler(mock_event)
@@ -54,7 +63,7 @@ async def test_valid_edit_sends_notification(plugin):
 
     # Verify notification was sent
     expected_message = (
-        ">  Message edited by @user:example.com in room !test_room:example.com\n\n"
+        ">  Message edited by editorname (@user:example.com) in room room_name. room_id: '!test_room:example.com'\n\n"
         ">  Original message:\noriginal message content\n\n"
         ">  New message:\nedited message content\n"
         "----------------------------------------\n\n"
@@ -70,6 +79,7 @@ async def test_message_not_sent_when_room_ignored(plugin):
     mock_event = MagicMock(spec=MessageEvent)
     mock_event.room_id = "!ignored:example.com"
     mock_event.sender = "@user:example.com"
+    mock_event.type = EventType.ROOM_MESSAGE
     
     # Create valid edit content
     edit_content = MagicMock()
@@ -88,8 +98,8 @@ async def test_editbot_disable(plugin):
     mock_event = AsyncMock(spec=MessageEvent)
     mock_event.room_id = "!new:example.com"
     mock_event.sender = "@user:example.com"
+    mock_event.type = EventType.ROOM_MESSAGE
     mock_event.redact = AsyncMock()
-    # mock_event.client = AsyncMock()
     edit_content = MagicMock()
     edit_content.get_edit.return_value = None
     edit_content.body = "!editbot_disable"
@@ -114,7 +124,7 @@ async def test_editbot_already_disabled(plugin):
     mock_event.room_id = "!ignored:example.com"
     mock_event.sender = "@user:example.com"
     mock_event.redact = AsyncMock()
-    # mock_event.client = AsyncMock()
+    mock_event.type = EventType.ROOM_MESSAGE
     edit_content = MagicMock()
     edit_content.get_edit.return_value = None
     edit_content.body = "!editbot_disable"

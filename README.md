@@ -2,7 +2,7 @@
 
 This is a [maubot](https://github.com/maubot/maubot) to record message edits.
 
-You can disable rooms that will be watched by adding them to the configuration or using the magic word `!editbot_disable` on the room.
+You can disable rooms that will be watched by adding them to the configuration or using the magic word `!editbot_disable` on the room. You can also react with "🔇" to a message in the edit_room in order to disable the plugin for the room.
 
 ## Rationale
 
