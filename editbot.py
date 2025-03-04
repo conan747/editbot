@@ -33,19 +33,20 @@ class EditBot(Plugin):
         if event.type not in [EventType.ROOM_MESSAGE, EventType.REACTION]:
             self.log.debug("Ignoring event type %s", event.type)
             return
-        if event.type == EventType.REACTION and event.room_id == self.config["edit_room"]:
-            relates_to = event.content.relates_to
-            if relates_to == None or relates_to.rel_type is not RelationType.ANNOTATION or relates_to.key != SILENCE_REACTION:
-                self.log.debug("Wrong reaction: %s" % event.content)
-                return
-            event_to_silence: MessageEvent = await self.client.get_event(self.config["edit_room"], relates_to.event_id)
-            text = event_to_silence.content.body
-            matches = ROOM_ID_REGEX.match(text)
-            if matches:
-                room_id = matches.group(1)
-                await self.editbot_disable(room_id)
-            else:
-                self.log.warning(f"Could not match room id from message in: {text}")
+        if event.type == EventType.REACTION:
+            if event.room_id == self.config["edit_room"]:
+                relates_to = event.content.relates_to
+                if relates_to == None or relates_to.rel_type is not RelationType.ANNOTATION or relates_to.key != SILENCE_REACTION:
+                    self.log.debug("Wrong reaction: %s" % event.content)
+                    return
+                event_to_silence: MessageEvent = await self.client.get_event(self.config["edit_room"], relates_to.event_id)
+                text = event_to_silence.content.body
+                matches = ROOM_ID_REGEX.match(text)
+                if matches:
+                    room_id = matches.group(1)
+                    await self.editbot_disable(room_id)
+                else:
+                    self.log.warning(f"Could not match room id from message in: {text}")
             return
         edit_message = event.content.get_edit()
         if edit_message == None:
